@@ -16,7 +16,25 @@ namespace CampgroundReservations.DAO
 
         public IList<Campground> GetCampgroundsByParkId(int parkId)
         {
-            throw new NotImplementedException();
+            IList<Campground> campgrounds = new List<Campground>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM campground WHERE park_id = @park_id", conn);
+                cmd.Parameters.AddWithValue("@park_id", parkId);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Campground campground = GetCampgroundFromReader(reader);
+                    campgrounds.Add(campground);
+                }
+
+            }
+            return campgrounds;
+
+            //throw new NotImplementedException();
         }
 
         private Campground GetCampgroundFromReader(SqlDataReader reader)
