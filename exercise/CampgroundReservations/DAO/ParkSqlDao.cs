@@ -16,7 +16,19 @@ namespace CampgroundReservations.DAO
 
         public IList<Park> GetAllParks()
         {
-            throw new NotImplementedException();
+            IList<Park> parks = new List<Park>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT * FROM park ORDER BY location", conn);
+                SqlDataReader reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    Park park = GetParkFromReader(reader);
+                    parks.Add(park);
+                }
+            }
+            return parks;
         }
 
         private Park GetParkFromReader(SqlDataReader reader)

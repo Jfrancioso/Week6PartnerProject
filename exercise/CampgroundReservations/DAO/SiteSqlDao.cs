@@ -16,7 +16,28 @@ namespace CampgroundReservations.DAO
 
         public IList<Site> GetSitesThatAllowRVs(int parkId)
         {
-            throw new NotImplementedException();
+           
+            IList<Site> Sites = new List<Site>();
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                conn.Open();
+                SqlCommand cmd = new SqlCommand("SELECT site.site_id, site.camground_id, site.site_number, site.max_occupancy, site.accessbile, site.max_rv_length, site.utilities" +
+                    "FROM site" +
+                    "JOIN campground ON site.campground_id = campground.campground_id" +
+                    "JOIN park ON campground.park_id = park.park_id" +
+                    "WHERE campground.park_id = @parkId AND site.max_rv_length > 0", conn);
+                     cmd.Parameters.AddWithValue("@park_id", parkId);
+
+                SqlDataReader reader = cmd.ExecuteReader();
+
+                while (reader.Read())
+                {
+                    Site site = GetSiteFromReader(reader);
+                    Sites.Add(site);
+                }
+
+            }
+            return Sites;
         }
 
 
